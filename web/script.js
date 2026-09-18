@@ -1,5 +1,7 @@
 const SIZE = 26;
 
+//below fix icons not appearing in web app
+
 const options = [
 "Fox",
 "Marth",
@@ -109,7 +111,7 @@ for (let row = 0; row < SIZE; row++) {
 
 function imagePath(index) {
 
-return `../images/option${index + 1}.png`;
+return `./images/option${index + 1}.png`;
 
 }
 
