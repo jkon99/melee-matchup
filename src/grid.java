@@ -113,8 +113,8 @@ public class grid extends JFrame {
             for (int col = 0; col < SIZE; col++) {
 
                 JComboBox<String> combo = new JComboBox<>(ratios);
-                combo.setRenderer(new RatioRenderer()); // only displaying in drop down but not yet chart or export.
-                                                        // must fix...
+
+                combo.setRenderer(new RatioRenderer());
 
                 grid[row][col] = combo;
 
@@ -131,12 +131,17 @@ public class grid extends JFrame {
 
                 combo.addActionListener(e -> {
 
+                    updateComboColor(combo);
+
                     if (!updatingMirror) {
                         updateMirror(r, c);
                     }
                 });
 
+                updateComboColor(combo);
+
                 panel.add(combo);
+
             }
         }
 
@@ -308,6 +313,25 @@ public class grid extends JFrame {
         }
     }
 
+    private void updateComboColor(JComboBox<String> combo) {
+
+        String selected = (String) combo.getSelectedItem();
+
+        if (selected == null || selected.equals(" ")) {
+            combo.setBackground(Color.WHITE);
+            combo.setForeground(Color.BLACK);
+            return;
+        }
+
+        String[] parts = selected.split(":");
+        int first = Integer.parseInt(parts[0]);
+
+        Color color = ratioColor(first);
+
+        combo.setBackground(color);
+        combo.setForeground(Color.BLACK);
+    }
+
     private void showMatchupWindow(int selectedOption) {
 
         JFrame matchupFrame = new JFrame(
@@ -324,10 +348,43 @@ public class grid extends JFrame {
 
         matchupFrame.setLayout(new BorderLayout());
 
+        // ==========================================
+        // MATCHUP PANEL
+        // ==========================================
+
         JPanel matchupPanel = new JPanel();
 
         matchupPanel.setLayout(
                 new BoxLayout(matchupPanel, BoxLayout.Y_AXIS));
+
+        matchupPanel.setBackground(
+                new Color(235, 235, 235));
+
+        // ==========================================
+        // EDITABLE TITLE
+        // ==========================================
+
+        JPanel titlePanel = new JPanel(
+                new FlowLayout(FlowLayout.CENTER));
+
+        titlePanel.setBackground(
+                new Color(235, 235, 235));
+
+        JTextField titleField = new JTextField(
+                options[selectedOption] + " Match Up Chart");
+
+        titleField.setFont(
+                new Font("Arial", Font.BOLD, 28));
+
+        titleField.setHorizontalAlignment(
+                SwingConstants.CENTER);
+
+        titleField.setPreferredSize(
+                new Dimension(500, 50));
+
+        titlePanel.add(titleField);
+
+        matchupPanel.add(titlePanel);
 
         // ==========================================
         // SELECTED OPTION IMAGE
@@ -349,22 +406,71 @@ public class grid extends JFrame {
 
         for (int ratio = 90; ratio >= 10; ratio -= 5) {
 
-            // Keep track of whether this ratio is actually used
             boolean ratioUsed = false;
 
             JPanel tier = new JPanel(
-                    new FlowLayout(FlowLayout.LEFT));
+                    new FlowLayout(
+                            FlowLayout.LEFT,
+                            10,
+                            10));
 
-            JLabel ratioLabel = new JLabel(
+            tier.setBackground(Color.WHITE);
+
+            // Border around entire tier
+            tier.setBorder(
+                    BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(
+                                    Color.GRAY,
+                                    2),
+                            BorderFactory.createEmptyBorder(
+                                    5,
+                                    10,
+                                    5,
+                                    10)));
+
+            // ==========================================
+            // EDITABLE RATIO FIELD
+            // ==========================================
+
+            JTextField ratioField = new JTextField(
                     ratio + ":" + (100 - ratio));
 
-            tier.add(ratioLabel);
+            ratioField.setOpaque(true);
 
-            // Look through every other option
+            ratioField.setHorizontalAlignment(
+                    SwingConstants.CENTER);
+
+            ratioField.setFont(
+                    new Font("Arial", Font.BOLD, 14));
+
+            ratioField.setPreferredSize(
+                    new Dimension(80, 35));
+
+            // Color based on ORIGINAL ratio
+            Color color = ratioColor(ratio);
+
+            ratioField.setBackground(color);
+            ratioField.setForeground(Color.BLACK);
+
+            ratioField.setBorder(
+                    BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(
+                                    Color.DARK_GRAY,
+                                    1),
+                            BorderFactory.createEmptyBorder(
+                                    5,
+                                    5,
+                                    5,
+                                    5)));
+
+            tier.add(ratioField);
+
+            // ==========================================
+            // LOOK THROUGH EVERY OTHER OPTION
+            // ==========================================
+
             for (int other = 0; other < SIZE; other++) {
 
-                // Don't put the selected option
-                // against itself.
                 if (other == selectedOption) {
                     continue;
                 }
@@ -386,12 +492,21 @@ public class grid extends JFrame {
 
                     JLabel opponentLabel = new JLabel(opponentIcon);
 
+                    opponentLabel.setBorder(
+                            BorderFactory.createEmptyBorder(
+                                    3,
+                                    3,
+                                    3,
+                                    3));
+
                     tier.add(opponentLabel);
                 }
             }
 
-            // ONLY add the tier if at least one
-            // matchup uses this ratio.
+            // ==========================================
+            // ONLY ADD USED TIERS
+            // ==========================================
+
             if (ratioUsed) {
                 matchupPanel.add(tier);
             }
@@ -416,6 +531,10 @@ public class grid extends JFrame {
         JButton saveButton = new JButton("Save PNG");
 
         saveButton.addActionListener(e -> {
+
+            // Remove focus from any text field
+            // so the most recent edit is committed.
+            matchupFrame.requestFocus();
 
             savePanelAsPNG(matchupPanel);
 
