@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Melee Matchup Chart</title>
+    <link rel="icon" type="image/png" href="../images/appIcon.png" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="toolbar">
+        <div>
+          <h1>Melee Matchup Chart</h1>
+          <p>
+            Set a matchup ratio and the opposing matchup updates automatically.
+          </p>
+        </div>
+        <div class="controls">
+          <label for="characterSelect">Select Option:</label>
+          <select id="characterSelect"></select>
+          <button id="exportButton" type="button">Export Matchup</button>
+        </div>
+      </header>
+
+      <main class="grid-wrapper">
+        <div id="matchupGrid" class="matchup-grid"></div>
+      </main>
+    </div>
+    <div id="exportModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button
+            id="closeModal"
+            class="close-button"
+            type="button"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="export-scroll">
+          <div id="exportPanel" class="export-panel">
+            <div class="title-panel">
+              <input id="chartTitle" class="chart-title" type="text" />
+            </div>
+
+            <img
+              id="selectedCharacterImage"
+              class="selected-character-image"
+              alt="Selected character"
+            />
+
+            <div id="tiers" class="tiers"></div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button id="saveButton" class="primary-button" type="button">
+            Save PNG
+          </button>
+        </div>
+      </div>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>

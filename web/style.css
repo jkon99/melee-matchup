@@ -1,0 +1,342 @@
+{
+box-sizing: border-box;
+}
+
+html,
+body {
+margin: 0;
+width: 100%;
+min-height: 100%;
+font-family: Arial, Helvetica, sans-serif;
+background: #eeeeee;
+color: #111111;
+}
+
+body {
+overflow: hidden;
+}
+
+.app {
+width: 100vw;
+height: 100vh;
+display: flex;
+flex-direction: column;
+}
+
+.toolbar {
+flex: 0 0 auto;
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 20px;
+padding: 12px 18px;
+background: #242424;
+color: white;
+border-bottom: 2px solid #111111;
+}
+
+.toolbar h1 {
+margin: 0;
+font-size: 22px;
+}
+
+.toolbar p {
+margin: 4px 0 0;
+color: #cccccc;
+font-size: 13px;
+}
+
+.controls {
+display: flex;
+align-items: center;
+gap: 8px;
+white-space: nowrap;
+}
+
+.controls label {
+font-size: 14px;
+}
+
+.controls select,
+.controls button,
+.modal-footer button {
+font: inherit;
+}
+
+.controls select {
+min-width: 130px;
+height: 34px;
+padding: 3px 8px;
+}
+
+.controls button,
+.primary-button {
+height: 34px;
+padding: 0 14px;
+border: 1px solid #999999;
+border-radius: 4px;
+background: #ffffff;
+cursor: pointer;
+font-weight: bold;
+}
+
+.controls button:hover,
+.primary-button:hover {
+background: #e8e8e8;
+}
+
+.grid-wrapper {
+flex: 1;
+min-height: 0;
+overflow: auto;
+padding: 8px;
+}
+
+.matchup-grid {
+display: grid;
+grid-template-columns: 64px repeat(26, minmax(54px, 1fr));
+grid-template-rows: 64px repeat(26, 54px);
+gap: 2px;
+min-width: 1500px;
+min-height: 1500px;
+}
+
+.grid-corner {
+background: #dddddd;
+}
+
+.character-header,
+.character-label {
+display: flex;
+justify-content: center;
+align-items: center;
+background: #dddddd;
+padding: 4px;
+}
+
+.character-header img,
+.character-label img {
+max-width: 54px;
+max-height: 54px;
+object-fit: contain;
+}
+
+.character-header {
+border-bottom: 1px solid #999999;
+}
+
+.character-label {
+border-right: 1px solid #999999;
+}
+
+.matchup-cell {
+width: 100%;
+height: 100%;
+min-width: 0;
+border: 0;
+border-radius: 2px;
+padding: 0;
+font-size: 13px;
+font-weight: bold;
+text-align: center;
+color: #000000;
+cursor: pointer;
+appearance: auto;
+}
+
+.matchup-cell:focus {
+outline: 2px solid #333333;
+outline-offset: -2px;
+position: relative;
+z-index: 2;
+}
+
+.matchup-cell option {
+background: white;
+color: black;
+}
+
+/*
+
+The browser does not allow us to style each native <option>
+
+consistently across every OS/browser, so the selected cell
+
+itself gets the matchup color from JavaScript.
+*/
+
+.modal {
+position: fixed;
+inset: 0;
+z-index: 1000;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 20px;
+background: rgba(0, 0, 0, 0.65);
+}
+
+.modal.hidden {
+display: none;
+}
+
+.modal-content {
+width: min(1200px, 95vw);
+height: min(900px, 95vh);
+display: flex;
+flex-direction: column;
+background: #ebebeb;
+border-radius: 6px;
+box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+overflow: hidden;
+}
+
+.modal-header {
+flex: 0 0 42px;
+display: flex;
+justify-content: flex-end;
+align-items: center;
+padding: 0 10px;
+}
+
+.close-button {
+width: 34px;
+height: 34px;
+border: 0;
+background: transparent;
+font-size: 30px;
+line-height: 30px;
+cursor: pointer;
+color: #444444;
+}
+
+.close-button:hover {
+color: #000000;
+}
+
+.export-scroll {
+flex: 1;
+min-height: 0;
+overflow: auto;
+padding: 0 20px 20px;
+}
+
+.export-panel {
+width: 100%;
+min-width: 700px;
+padding: 0 10px 20px;
+background: #ebebeb;
+}
+
+.title-panel {
+display: flex;
+justify-content: center;
+margin-bottom: 12px;
+}
+
+.chart-title {
+width: 500px;
+max-width: 90%;
+height: 50px;
+padding: 5px 10px;
+border: 1px solid #999999;
+border-radius: 3px;
+background: white;
+font-size: 28px;
+font-weight: bold;
+text-align: center;
+}
+
+.selected-character-image {
+display: block;
+width: auto;
+height: 100px;
+max-width: 160px;
+object-fit: contain;
+margin: 0 auto 15px;
+}
+
+.tiers {
+display: flex;
+flex-direction: column;
+gap: 5px;
+}
+
+.tier {
+display: flex;
+align-items: center;
+gap: 10px;
+min-height: 55px;
+padding: 7px 10px;
+background: white;
+border: 2px solid #808080;
+}
+
+.tier-ratio {
+flex: 0 0 80px;
+width: 80px;
+height: 35px;
+padding: 5px;
+border: 1px solid #444444;
+border-radius: 2px;
+font-size: 14px;
+font-weight: bold;
+text-align: center;
+color: black;
+}
+
+.opponent {
+width: 48px;
+height: 48px;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 3px;
+}
+
+.opponent img {
+max-width: 100%;
+max-height: 100%;
+object-fit: contain;
+}
+
+.modal-footer {
+flex: 0 0 auto;
+display: flex;
+justify-content: center;
+padding: 10px;
+background: #dddddd;
+border-top: 1px solid #aaaaaa;
+}
+
+.primary-button {
+height: 38px;
+padding: 0 20px;
+}
+
+@media (max-width: 700px) {
+.toolbar {
+align-items: flex-start;
+flex-direction: column;
+}
+
+.controls {
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.controls select {
+    flex: 1;
+}
+
+.modal {
+    padding: 5px;
+}
+
+.modal-content {
+    width: 100%;
+    height: 100%;
+}
+
+
+}
