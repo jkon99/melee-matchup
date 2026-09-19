@@ -50,9 +50,12 @@ const ratios = [
 "90:10"
 ];
 
+
 const matchupGrid = [];
 
 let updatingMirror = false;
+
+let displayMode = "ratio";
 
 const resetButton =
     document.getElementById("resetButton");
@@ -66,6 +69,10 @@ document.getElementById("characterSelect");
 
 const exportButton =
 document.getElementById("exportButton");
+
+const toggleDisplayButton =
+    document.getElementById("toggleDisplayButton");
+
 
 const exportModal =
 document.getElementById("exportModal");
@@ -130,6 +137,8 @@ const position = (value - 10) / 80;
 let red;
 let green;
 
+
+
 // Red -> Yellow
 if (position < 0.5) {
 
@@ -178,6 +187,50 @@ select.style.backgroundColor =
 select.style.color = "black";
 
 }
+
+function ratioToNumber(ratio) {
+
+    if (!ratio || ratio === " ") {
+        return " ";
+    }
+
+    const first =
+        parseInt(ratio.split(":")[0], 10);
+
+    const value =
+        (first - 50) / 10;
+
+    if (value === 0) {
+        return "0";
+    }
+
+    return value > 0
+        ? `+${value}`
+        : `${value}`;
+}
+
+
+function toggleDisplayMode() {
+
+    if (displayMode === "ratio") {
+
+        displayMode = "number";
+
+        toggleDisplayButton.textContent =
+            "Show Ratios";
+
+    } else {
+
+        displayMode = "ratio";
+
+        toggleDisplayButton.textContent =
+            "Show Numbers";
+    }
+
+    buildGrid();
+}
+
+
 
 // ==========================================
 // MIRROR RATIO
@@ -253,54 +306,68 @@ updatingMirror = false;
 
 function createRatioSelect(row, col) {
 
-const select =
-    document.createElement("select");
+    const select =
+        document.createElement("select");
 
-select.className = "matchup-cell";
+    select.className =
+        "matchup-cell";
 
-select.dataset.row = row;
-select.dataset.col = col;
+    select.dataset.row = row;
+    select.dataset.col = col;
 
-// Add every possible ratio.
-for (const ratio of ratios) {
+    // Add every possible ratio.
+    for (const ratio of ratios) {
 
-    const option =
-        document.createElement("option");
+        const option =
+            document.createElement("option");
 
-    option.value = ratio;
-    option.textContent = ratio;
+        // IMPORTANT:
+        // The actual stored value is ALWAYS the ratio.
+        option.value = ratio;
 
-    select.appendChild(option);
-}
+        // Change only what is displayed.
+        if (displayMode === "number") {
 
-// Set starting value.
-select.value =
-    matchupGrid[row][col];
+            option.textContent =
+                ratioToNumber(ratio);
 
-// Handle changes.
-select.addEventListener(
-    "change",
-    () => {
+        } else {
 
-        matchupGrid[row][col] =
-        select.value;
-
-        updateCellColor(select);
-
-        saveProgress();
-
-
-        if (!updatingMirror) {
-            updateMirror(row, col);
+            option.textContent =
+                ratio;
         }
+
+        select.appendChild(option);
     }
-);
 
-updateCellColor(select);
+    // Set starting value.
+    select.value =
+        matchupGrid[row][col];
 
-return select;
+    // Handle changes.
+    select.addEventListener(
+        "change",
+        () => {
 
+            matchupGrid[row][col] =
+                select.value;
+
+            updateCellColor(select);
+
+            saveProgress();
+
+            if (!updatingMirror) {
+                updateMirror(row, col);
+            }
+        }
+    );
+
+    updateCellColor(select);
+
+    return select;
 }
+
+
 
 // ==========================================
 // CREATE CHARACTER IMAGE
@@ -489,7 +556,10 @@ for (
         "tier-ratio";
 
     ratioField.value =
-        `${ratio}:${100 - ratio}`;
+    displayMode === "number"
+        ? ratioToNumber(`${ratio}:${100 - ratio}`)
+        : `${ratio}:${100 - ratio}`;
+
 
     ratioField.style.backgroundColor =
         ratioColor(ratio);
@@ -757,6 +827,12 @@ try {
         const ratio =
             tierData.ratio;
 
+            const displayRatio =
+    displayMode === "number"
+        ? ratioToNumber(`${ratio}:${100 - ratio}`)
+        : `${ratio}:${100 - ratio}`;
+
+
         // ==============================
         // TIER BACKGROUND
         // ==============================
@@ -826,10 +902,11 @@ try {
         ctx.textBaseline = "middle";
 
         ctx.fillText(
-            `${ratio}:${100 - ratio}`,
+            displayRatio,
             75,
             y + 34
         );
+
 
         // ==============================
         // OPPONENT IMAGES
@@ -1048,6 +1125,13 @@ exportButton.addEventListener(
 }
 
 );
+
+toggleDisplayButton.addEventListener(
+    "click",
+    toggleDisplayMode
+);
+
+
 
 closeModal.addEventListener(
 "click",
