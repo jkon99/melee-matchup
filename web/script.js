@@ -1,7 +1,5 @@
 const SIZE = 26;
 
-//below fix icons not appearing in web app
-
 const options = [
 "Fox",
 "Marth",
@@ -55,6 +53,10 @@ const ratios = [
 const matchupGrid = [];
 
 let updatingMirror = false;
+
+const resetButton =
+    document.getElementById("resetButton");
+
 
 const gridElement =
 document.getElementById("matchupGrid");
@@ -281,9 +283,12 @@ select.addEventListener(
     () => {
 
         matchupGrid[row][col] =
-            select.value;
+        select.value;
 
         updateCellColor(select);
+
+        saveProgress();
+
 
         if (!updatingMirror) {
             updateMirror(row, col);
@@ -914,6 +919,33 @@ catch (error) {
     );
 }
 
+// ==========================================
+// RESET PROGRESS
+// ==========================================
+
+function resetProgress() {
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to reset all matchup data?"
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    // Reset the matchup grid.
+    initializeData();
+
+    // Remove saved progress.
+    clearProgress();
+
+    // Rebuild the grid so the dropdowns
+    // show the newly reset values.
+    buildGrid();
+}
+
+
 }
 
 // ==========================================
@@ -1039,6 +1071,12 @@ exportModal.addEventListener(
 
 );
 
+resetButton.addEventListener(
+    "click",
+    resetProgress
+);
+
+
 // Close with Escape.
 document.addEventListener(
 "keydown",
@@ -1056,11 +1094,102 @@ document.addEventListener(
 );
 
 // ==========================================
+// SAVE / LOAD PROGRESS
+// ==========================================
+
+const SAVE_KEY = "meleeMatchupProgress";
+
+function saveProgress() {
+
+    const saveData = {
+        matchupGrid: matchupGrid,
+        selectedCharacter: characterSelect.selectedIndex
+    };
+
+    localStorage.setItem(
+        SAVE_KEY,
+        JSON.stringify(saveData)
+    );
+}
+
+function loadProgress() {
+
+    const savedData =
+        localStorage.getItem(SAVE_KEY);
+
+    if (!savedData) {
+        return false;
+    }
+
+    try {
+
+        const data =
+            JSON.parse(savedData);
+
+        // Make sure the saved grid has
+        // the correct dimensions.
+        if (
+            !data.matchupGrid ||
+            data.matchupGrid.length !== SIZE
+        ) {
+            return false;
+        }
+
+        // Restore matchup grid.
+        for (let row = 0; row < SIZE; row++) {
+
+            if (
+                !data.matchupGrid[row] ||
+                data.matchupGrid[row].length !== SIZE
+            ) {
+                return false;
+            }
+
+            matchupGrid[row] =
+                data.matchupGrid[row];
+        }
+
+        // Restore selected character.
+        if (
+            typeof data.selectedCharacter === "number" &&
+            data.selectedCharacter >= 0 &&
+            data.selectedCharacter < SIZE
+        ) {
+
+            characterSelect.selectedIndex =
+                data.selectedCharacter;
+        }
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Could not load saved progress:",
+            error
+        );
+
+        return false;
+    }
+}
+
+function clearProgress() {
+
+    localStorage.removeItem(SAVE_KEY);
+}
+
+
+// ==========================================
 // START APPLICATION
 // ==========================================
 
 initializeData();
 
 buildCharacterSelector();
+
+const hasSavedProgress =
+    loadProgress();
 
 buildGrid();
