@@ -919,6 +919,9 @@ catch (error) {
     );
 }
 
+
+}
+
 // ==========================================
 // RESET PROGRESS
 // ==========================================
@@ -943,9 +946,6 @@ function resetProgress() {
     // Rebuild the grid so the dropdowns
     // show the newly reset values.
     buildGrid();
-}
-
-
 }
 
 // ==========================================
