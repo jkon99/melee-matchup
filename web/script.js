@@ -60,6 +60,10 @@ let displayMode = "ratio";
 const resetButton =
     document.getElementById("resetButton");
 
+    const exportSpreadsheetButton =
+    document.getElementById("exportSpreadsheetButton");
+
+
 
 const gridElement =
 document.getElementById("matchupGrid");
@@ -366,6 +370,93 @@ function createRatioSelect(row, col) {
 
     return select;
 }
+
+// ==========================================
+// EXPORT FULL MATCHUP CHART AS CSV
+// ==========================================
+
+function exportMatchupSpreadsheet() {
+
+    const rows = [];
+
+    // ======================================
+    // HEADER ROW
+    // ======================================
+
+    const header = ["Character"];
+
+    for (let col = 0; col < SIZE; col++) {
+        header.push(options[col]);
+    }
+
+    rows.push(header);
+
+    // ======================================
+    // MATCHUP ROWS
+    // ======================================
+
+    for (let row = 0; row < SIZE; row++) {
+
+        const rowData = [options[row]];
+
+        for (let col = 0; col < SIZE; col++) {
+
+            const value =
+                matchupGrid[row][col];
+
+            rowData.push(value);
+        }
+
+        rows.push(rowData);
+    }
+
+    // ======================================
+    // CONVERT TO CSV
+    // ======================================
+
+    const csv =
+        rows
+            .map(row =>
+                row
+                    .map(value =>
+                        `"${String(value).replace(/"/g, '""')}"`
+                    )
+                    .join(",")
+            )
+            .join("\n");
+
+    // ======================================
+    // CREATE DOWNLOAD
+    // ======================================
+
+    const blob =
+        new Blob(
+            [csv],
+            {
+                type: "text/csv;charset=utf-8;"
+            }
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const link =
+        document.createElement("a");
+
+    link.href = url;
+
+    link.download =
+        "Melee_Matchup_Chart.csv";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    URL.revokeObjectURL(url);
+}
+
 
 
 
@@ -1130,6 +1221,12 @@ toggleDisplayButton.addEventListener(
     "click",
     toggleDisplayMode
 );
+
+exportSpreadsheetButton.addEventListener(
+    "click",
+    exportMatchupSpreadsheet
+);
+
 
 
 
